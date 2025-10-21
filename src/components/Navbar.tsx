@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, User, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,10 +53,16 @@ export default function Navbar() {
       style={{ backdropFilter: !isSticky ? "blur(2px)" : undefined }}
     >
       <div className="flex items-center gap-8">
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 border-2 ${isSticky ? "border-indigo-900" : "border-white"}`} style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}></div>
+        <Link href="/" className="flex items-center gap-2">
+          <Image 
+            src="/logo.png" 
+            alt="Opalineart Logo" 
+            width={32} 
+            height={32}
+            className="w-auto h-8"
+          />
           <h1 className={`text-xl font-bold ${isSticky ? "text-indigo-900" : "text-white"}`}>Opalineart</h1>
-        </div>
+        </Link>
       </div>
       <div className="flex items-center gap-4">
         <button className={`p-2 rounded-lg transition-colors ${isSticky ? "hover:bg-indigo-100" : "hover:bg-indigo-800"}`}>

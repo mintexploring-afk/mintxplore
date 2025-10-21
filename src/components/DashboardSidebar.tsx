@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import NextImage from 'next/image';
 import { 
   User, 
   LogOut, 
@@ -82,7 +83,13 @@ export default function DashboardSidebar({ isAdmin = false }: {
   return (
     <div className="p-6">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 border-2 border-indigo-600" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
+        <NextImage 
+          src="/logo.png" 
+          alt="Opalineart Logo" 
+          width={48} 
+          height={48}
+          className="w-12 h-12"
+        />
         <h2 className="text-xl font-bold text-indigo-600">Opalineart</h2>
       </div>
       <nav className="space-y-2">

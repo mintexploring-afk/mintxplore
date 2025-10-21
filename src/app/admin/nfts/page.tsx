@@ -180,6 +180,45 @@ export default function AdminNFTs() {
     }
   }
 
+  const handleToggleActive = async (nftId: string, currentStatus: boolean) => {
+    if (!confirm(`Are you sure you want to ${currentStatus ? 'deactivate' : 'activate'} this NFT?`)) {
+      return
+    }
+
+    setProcessing(true)
+    try {
+      const token = getToken()
+      const res = await fetch('/api/nfts/toggle-active', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id: nftId,
+          isActive: !currentStatus
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        alert(data.message)
+        if (selectedNFT && selectedNFT._id === nftId) {
+          setSelectedNFT({ ...selectedNFT, isActive: !currentStatus })
+        }
+        fetchNFTs()
+      } else {
+        alert(data.error || 'Error toggling NFT status')
+      }
+    } catch (error) {
+      console.error('Error toggling NFT status:', error)
+      alert('Error toggling NFT status')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
   const handlePageChange = (page: number) => {
     setTabStates(prev => ({
       ...prev,
@@ -293,11 +332,20 @@ export default function AdminNFTs() {
       label: 'Status',
       sortable: true,
       render: (nft) => (
-        <div className="flex items-center gap-2">
-          {getStatusIcon(nft.status)}
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(nft.status)}`}>
-            {nft.status}
-          </span>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            {getStatusIcon(nft.status)}
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(nft.status)}`}>
+              {nft.status}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+              nft.isActive ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+            }`}>
+              {nft.isActive ? 'Active' : 'Inactive'}
+            </span>
+          </div>
         </div>
       )
     },
@@ -429,6 +477,33 @@ export default function AdminNFTs() {
                         {selectedNFT.status}
                       </span>
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Active Status</label>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        selectedNFT.isActive ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {selectedNFT.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <button
+                        onClick={() => handleToggleActive(selectedNFT._id, selectedNFT.isActive)}
+                        disabled={processing || selectedNFT.status !== 'approved'}
+                        className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          selectedNFT.isActive
+                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        }`}
+                      >
+                        {selectedNFT.isActive ? 'Deactivate' : 'Activate'}
+                      </button>
+                    </div>
+                    {selectedNFT.status !== 'approved' && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Can only toggle active status for approved NFTs
+                      </p>
+                    )}
                   </div>
 
                   <div>
