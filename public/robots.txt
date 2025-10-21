@@ -1,0 +1,23 @@
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dashboard/
+
+# Allow specific public pages
+Allow: /
+Allow: /about
+Allow: /categories
+Allow: /category/*
+Allow: /nft/*
+Allow: /profile/*
+Allow: /login
+Allow: /register
+Allow: /privacy
+Allow: /terms
+
+# Sitemap location
+Sitemap: http://localhost:3000/sitemap.xml
