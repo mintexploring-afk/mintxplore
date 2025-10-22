@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import DashboardSidebar from '@/components/DashboardSidebar';
+import { useAuth } from '@/contexts/AuthContext';
 import { Save, RefreshCw } from 'lucide-react';
 
 export default function ExchangeRatesPage() {
-  const router = useRouter();
+  const { getToken } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -24,9 +23,10 @@ export default function ExchangeRatesPage() {
 
   const fetchSettings = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token) {
-        router.push('/login');
+        setError('Not authenticated');
+        setLoading(false);
         return;
       }
 
@@ -37,7 +37,8 @@ export default function ExchangeRatesPage() {
       });
 
       if (response.status === 401 || response.status === 403) {
-        router.push('/login');
+        setError('Unauthorized access');
+        setLoading(false);
         return;
       }
 
@@ -60,9 +61,10 @@ export default function ExchangeRatesPage() {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token) {
-        router.push('/login');
+        setError('Not authenticated');
+        setSaving(false);
         return;
       }
 
@@ -78,7 +80,8 @@ export default function ExchangeRatesPage() {
       });
 
       if (response.status === 401 || response.status === 403) {
-        router.push('/login');
+        setError('Unauthorized access');
+        setSaving(false);
         return;
       }
 
@@ -109,23 +112,17 @@ export default function ExchangeRatesPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
-        <DashboardSidebar />
-        <div className="flex-1 p-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          </div>
+      <div className="p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <DashboardSidebar />
-      
-      <div className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="p-8">
+      <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Exchange Rates</h1>
@@ -286,6 +283,5 @@ export default function ExchangeRatesPage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
